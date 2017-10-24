@@ -1,16 +1,18 @@
-#
+# This is a th R script of the R shiny app 
 
-
+#This is the user interface part
+#It's a dashboard made out of a header, a sidebar and a body
 ui <- dashboardPage(skin = "black",
   dashboardHeader(title = "Clinical Trials Dashboard",titleWidth = 350),
   
-  
+  # This is the sidebar where I included all the filters I wanted to let the user filter the database as he wished
   dashboardSidebar(
     sidebarMenu(
       menuItem("Charts", tabName = "charts", icon = icon("line-chart")),
       menuItem("Data", tabName = "data", icon = icon("table"),badgeLabel = "new", badgeColor = "green")
       ),
     hr(),
+    # Filter on the status of the clinical trial
     fluidRow(
       box(title = "Status", status = "primary", collapsible = TRUE,background = "black", width=11,
         checkboxGroupInput("status", label="",
@@ -20,30 +22,31 @@ ui <- dashboardPage(skin = "black",
                                "Active, not recruiting"="Active, not recruiting",
                                "Others"=NA), 
                 selected = "Recruiting"))),
-    
+    # Filter on the age of the patients included in the clinical trials
     fluidRow(
       box(title = "Eligibility criteria", status = "primary", collapsible = TRUE,background = "black",width=11,
         sliderInput("age", label = h4("Select Age range"), min = 0, 
                     max = 100, value = c(18, 80)),
         hr(),
+        # Filter on the sex of the patient recruited
         checkboxGroupInput("sex",label = h4("Sex"), 
                            choices = list("All" = "All", "Male" = "Male", "Female" = "Female"), 
                            selected = "All"))),
         
-                    
+    # Filter on the type of study                  
     fluidRow(
       box(title = "Study Type", status = "primary", collapsible = TRUE,background = "black",width=11,
         checkboxGroupInput("study_type",label="",
                 choices = list("Interventional" = "Interventional",
                                "Observational" = "Observational","Expanded Access"="Expanded Access"),
                 selected = "Interventional"))),
-
+    # Filter on the study results
     fluidRow(
       box(title = "Study results", status = "primary", collapsible = TRUE,background = "black",width=11,
         selectInput("results",label="",
                     choices = list("All" = 1, "With results" = 2, "Without Results" = 3),
                     selected = 1))),
-
+    # Filter on the phase of the clinical trial
     fluidRow(
       box(title = "Study phase", status = "primary", collapsible = TRUE,background = "black",width=11,
         checkboxGroupInput("phase",label="",
@@ -53,10 +56,10 @@ ui <- dashboardPage(skin = "black",
     
     ),
     
-  
+  # This is the body which includes the aggregated graph results and the database of the first results
   dashboardBody(
     tabItems(
-      # First tab content
+      # First tab content: it will contain the graphs
       tabItem(tabName = "charts",
               fluidRow(
                 #valueBox(10 * 2, "Enrollment Average", icon = icon("users")),
@@ -68,7 +71,7 @@ ui <- dashboardPage(skin = "black",
               )
       ),
       
-      # Second tab content
+      # Second tab content: it will contain the database of the first results
       tabItem(tabName = "data",
               h2("Graphs tab content"),
               # fluidRow(
@@ -81,15 +84,11 @@ ui <- dashboardPage(skin = "black",
   )
 )
 
+
+#This is the server part
 server <- function(input, output) {
   
-  #filter on last_known_status.text
-  #range Minimum_age and Maximum_age
-  #filter on eligibility.gender
-  #filter on study_type.text
-  #filter on firstreceived_results_date.text
-  #filter on phase.text, the word is included in cell
-  
+
   CTdyn<-reactive({
     CTsimple[ which(CTsimple$last_known_status.text==input$status
                          & CTsimple$Minimum_age >= input$age[1]
@@ -136,14 +135,13 @@ server <- function(input, output) {
       geom_vline(xintercept=mean(CTsimple$Duration), color="orange", linetype="dashed", size=1)
 
   })
-  # CTsimple2 = CTdyn()[sample(nrow(CTdyn()), 1000),
-  #                      c("id_info.nct_id","condition.text","intervention.intervention_name","phase.text","study_type.text","enrollment","Duration")]
+  
   output$table <- DT::renderDataTable({
-    #DT::datatable(CTsimple2[, input$show_vars, drop = FALSE])
     DT::datatable(CTdyn2())
   })
   
 }
 
+#Finally this is the function to launch the app!
 shinyApp(ui, server)
 

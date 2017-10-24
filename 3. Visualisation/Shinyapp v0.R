@@ -1,11 +1,5 @@
-#
-# This is a Shiny web application. You can run the application by clicking
-# the 'Run App' button above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
+#This is a first draft of a Shiny app to visualize some results
+
 setwd("C:/Users/ffitzpatrick/Desktop/Documents perso/Perso/Clinical trials - project/1. Data/1. Audit and cleaning/R database - phase 3")
 load("./Phase3_simple_clean.Rda")
 
@@ -29,10 +23,7 @@ ui <- function(request) {
         bookmarkButton("Intervention_type"),
         
         hr(),
-        #Select condition
-        #textInput("condition", label = h3("Choose condition"), value = "Enter text..."),
-        
-        
+
         #Select intervention type
          selectInput("Intervention_type", label = h3("Choose the intervention Type"), 
                      choices = list("Drug" = "Drug", "Device" = "Device", "Procedure" = "Procedure", "Behavioral" = "Behavioral", "Other" = "NA"), 
@@ -67,12 +58,7 @@ server <- function(input, output,session) {
                                   & study_type.text==input$Study_type
                                   & Min.age>input$Age[1]
                                   & Max.age<input$Age[2])})
-  
-  #output$state<-reactive(input$study_init)
-  #output$state="Observational"
-  
-  
-  
+
   
   output$enrollPlot <- renderPlot({
     
