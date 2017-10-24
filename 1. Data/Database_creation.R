@@ -51,6 +51,5 @@ length(common_trials)
 diff_trials
 duplicate_trials
 
-
-
-test<-get(load("C:/Users/ffitzpatrick/Desktop/Documents perso/Perso/Clinical trials - project/1. Data/0. Raw data/Test - output/Phase3_10.Rda"))
+#4- Saving the final aggregated file: CT_simple
+save(dataset, file=paste("C:/Users/ffitzpatrick/Desktop/Documents perso/Perso/Clinical trials - project/1. Data/0. Raw data/CT_simple.Rda",sep=""))
